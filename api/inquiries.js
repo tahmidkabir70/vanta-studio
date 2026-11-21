@@ -101,7 +101,6 @@ module.exports = async function handler(req, res) {
         method: "POST",
         headers: {
           apikey: supabaseSecret,
-          Authorization: `Bearer ${supabaseSecret}`,
           "Content-Type": "application/json",
           Prefer: "return=minimal"
         },
