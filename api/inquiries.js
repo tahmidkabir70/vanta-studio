@@ -24,32 +24,74 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const {
-      name,
-      email,
-      subject,
-      message
-    } = req.body || {};
+    const body = req.body || {};
 
-    const cleanName = String(name || "").trim();
-    const cleanEmail = String(email || "").trim().toLowerCase();
-    const cleanSubject = String(subject || "").trim();
-    const cleanMessage = String(message || "").trim();
+    const clean = value =>
+      typeof value === "string" ? value.trim() : "";
+
+    const name = clean(body.name);
+    const email = clean(body.email).toLowerCase();
+    const subject = clean(body.subject);
+    const service = clean(body.service);
+    const projectType = clean(body.project_type);
+    const budget = clean(body.budget);
+    const timeline = clean(body.timeline);
+    const message = clean(body.message);
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    const allowedServices = [
+      "Web Development",
+      "UI / UX Design",
+      "Brand Identity",
+      "Digital Strategy",
+      "E-Commerce",
+      "Creative Solutions",
+      "Not sure yet"
+    ];
+
+    const allowedProjectTypes = [
+      "New project",
+      "Redesign",
+      "Improvement",
+      "Consultation",
+      "Other"
+    ];
+
+    const allowedBudgets = [
+      "Not decided yet",
+      "Under $100",
+      "$100 – $300",
+      "$300 – $700",
+      "$700 – $1500",
+      "$1500+",
+      "Discuss first"
+    ];
+
+    const allowedTimelines = [
+      "As soon as possible",
+      "Within 2 weeks",
+      "Within 1 month",
+      "Within 2–3 months",
+      "Flexible"
+    ];
+
     if (
-      cleanName.length < 2 ||
-      cleanName.length > 100 ||
-      cleanEmail.length > 254 ||
-      !emailPattern.test(cleanEmail) ||
-      cleanSubject.length > 200 ||
-      cleanMessage.length < 5 ||
-      cleanMessage.length > 5000
+      name.length < 2 ||
+      name.length > 100 ||
+      email.length > 254 ||
+      !emailPattern.test(email) ||
+      subject.length > 200 ||
+      !allowedServices.includes(service) ||
+      !allowedProjectTypes.includes(projectType) ||
+      !allowedBudgets.includes(budget) ||
+      !allowedTimelines.includes(timeline) ||
+      message.length < 5 ||
+      message.length > 5000
     ) {
       return res.status(400).json({
         success: false,
-        message: "Please check your inquiry details."
+        message: "Please check all inquiry details."
       });
     }
 
@@ -64,19 +106,23 @@ module.exports = async function handler(req, res) {
           Prefer: "return=minimal"
         },
         body: JSON.stringify({
-          name: cleanName,
-          email: cleanEmail,
-          subject: cleanSubject || null,
-          service: cleanSubject || "General inquiry",
-          message: cleanMessage
+          name,
+          email,
+          subject: subject || null,
+          service,
+          project_type: projectType,
+          budget,
+          timeline,
+          message,
+          status: "new"
         })
       }
     );
 
     if (!response.ok) {
-      const errorDetails = await response.text();
+      const details = await response.text();
 
-      console.error("Supabase insert failed:", errorDetails);
+      console.error("Supabase insert failed:", details);
 
       return res.status(502).json({
         success: false,
@@ -86,7 +132,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(201).json({
       success: true,
-      message: "Your inquiry has been submitted successfully."
+      message: "Your project inquiry has been submitted successfully."
     });
 
   } catch (error) {

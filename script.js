@@ -2,25 +2,22 @@
 "use strict";
 
 /* =================================
-   VANTA STUDIO — INTERACTIONS
-   Updated: Supabase Inquiry API
+   VANTA STUDIO — MAIN SCRIPT
+   Supabase Project Inquiry System
 ================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
-  /* =================================
-     1. SCROLL REVEAL ANIMATIONS
-  ================================= */
+  /* 1. SCROLL REVEAL */
 
   const revealElements = document.querySelectorAll(".reveal");
 
-  if (reduceMotion) {
+  if (reduceMotion || !("IntersectionObserver" in window)) {
     revealElements.forEach(el => el.classList.add("visible"));
-  } else if ("IntersectionObserver" in window) {
+  } else {
     const revealObserver = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach(entry => {
@@ -37,20 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     revealElements.forEach(el => revealObserver.observe(el));
-  } else {
-    revealElements.forEach(el => el.classList.add("visible"));
   }
 
-  /* =================================
-     2. MOBILE NAVIGATION
-  ================================= */
+  /* 2. MOBILE NAVIGATION */
 
   const menuToggle = document.getElementById("menuToggle");
   const navMenu = document.getElementById("navMenu");
   const navLinks = document.querySelectorAll(".nav-link");
 
   function closeMenu() {
-    if (!navMenu || !menuToggle) return;
+    if (!menuToggle || !navMenu) return;
 
     navMenu.classList.remove("open");
     menuToggle.classList.remove("active");
@@ -80,9 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =================================
-     3. HEADER SCROLL EFFECT
-  ================================= */
+  /* 3. HEADER AND SCROLL PROGRESS */
 
   const header = document.getElementById("header");
   const scrollProgress = document.getElementById("scrollProgress");
@@ -125,9 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =================================
-     4. ACTIVE NAVIGATION
-  ================================= */
+  /* 4. ACTIVE NAVIGATION */
 
   const sections = document.querySelectorAll("main section[id]");
 
@@ -155,9 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =================================
-     5. CUSTOM CURSOR GLOW
-  ================================= */
+  /* 5. CUSTOM CURSOR GLOW */
 
   const cursorGlow = document.getElementById("cursorGlow");
 
@@ -179,9 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =================================
-     6. ANIMATED COUNTERS
-  ================================= */
+  /* 6. ANIMATED COUNTERS */
 
   const counters = document.querySelectorAll("[data-count]");
 
@@ -235,9 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     counters.forEach(animateCounter);
   }
 
-  /* =================================
-     7. PROJECT FILTER
-  ================================= */
+  /* 7. PROJECT FILTER */
 
   const filterButtons = document.querySelectorAll(".filter-btn");
   const projectCards = document.querySelectorAll(".project-card");
@@ -266,9 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* =================================
-     8. TESTIMONIAL SLIDER
-  ================================= */
+  /* 8. PHILOSOPHY SLIDER */
 
   const testimonials = [
     {
@@ -289,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   let currentSlide = 0;
+  let testimonialTimer = null;
 
   const testimonialText = document.getElementById("testimonialText");
   const testimonialName = document.getElementById("testimonialName");
@@ -308,11 +290,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const item = testimonials[currentSlide];
 
+    if (testimonialTimer) {
+      clearTimeout(testimonialTimer);
+    }
+
     if (testimonialContent && !reduceMotion) {
       testimonialContent.style.opacity = "0";
       testimonialContent.style.transform = "translateY(8px)";
 
-      window.setTimeout(() => {
+      testimonialTimer = window.setTimeout(() => {
         updateTestimonialContent(item);
         testimonialContent.style.opacity = "1";
         testimonialContent.style.transform = "translateY(0)";
@@ -346,9 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showTestimonial(0);
   }
 
-  /* =================================
-     9. FAQ ACCORDION
-  ================================= */
+  /* 9. FAQ ACCORDION */
 
   const faqItems = document.querySelectorAll(".faq-item");
 
@@ -378,102 +362,203 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* =================================
-     10. CONTACT FORM — SUPABASE API
-  ================================= */
+  /* 10. PROJECT INQUIRY FORM */
 
   const contactForm = document.getElementById("contactForm");
   const formStatus = document.getElementById("formStatus");
 
   if (contactForm && formStatus) {
+    const nameInput = document.getElementById("contactName");
+    const emailInput = document.getElementById("contactEmail");
+    const subjectInput = document.getElementById("contactSubject");
+    const messageInput = document.getElementById("contactMessage");
+
     const submitButton = contactForm.querySelector(
       'button[type="submit"], input[type="submit"]'
     );
 
-    const originalButtonText = submitButton
-      ? (submitButton.tagName === "INPUT"
-          ? submitButton.value
-          : submitButton.textContent)
-      : "";
+    if (
+      nameInput &&
+      emailInput &&
+      subjectInput &&
+      messageInput
+    ) {
+      /* Add structured project fields */
 
-    contactForm.addEventListener("submit", async event => {
-      event.preventDefault();
+      const inquiryFields = document.createElement("div");
+      inquiryFields.className = "inquiry-fields";
 
-      if (!contactForm.reportValidity()) return;
+      inquiryFields.innerHTML = `
+        <div class="form-row inquiry-row">
+          <div class="inquiry-field">
+            <label for="projectService">Service required *</label>
+            <select id="projectService" name="service" required>
+              <option value="">Choose a service</option>
+              <option value="Web Development">Web Development</option>
+              <option value="UI / UX Design">UI / UX Design</option>
+              <option value="Brand Identity">Brand Identity</option>
+              <option value="Digital Strategy">Digital Strategy</option>
+              <option value="E-Commerce">E-Commerce</option>
+              <option value="Creative Solutions">Creative Solutions</option>
+              <option value="Not sure yet">Not sure yet</option>
+            </select>
+          </div>
 
-      const name = document.getElementById("contactName")?.value.trim();
-      const email = document.getElementById("contactEmail")?.value.trim();
-      const subject = document.getElementById("contactSubject")?.value.trim();
-      const message = document.getElementById("contactMessage")?.value.trim();
+          <div class="inquiry-field">
+            <label for="projectType">Project type *</label>
+            <select id="projectType" name="project_type" required>
+              <option value="">Choose project type</option>
+              <option value="New project">New project</option>
+              <option value="Redesign">Website / product redesign</option>
+              <option value="Improvement">Existing project improvement</option>
+              <option value="Consultation">Consultation</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
 
-      if (!name || !email || !message) {
-        formStatus.textContent =
-          "Please complete all required fields.";
-        return;
-      }
+        <div class="form-row inquiry-row">
+          <div class="inquiry-field">
+            <label for="projectBudget">Estimated budget *</label>
+            <select id="projectBudget" name="budget" required>
+              <option value="">Select a budget range</option>
+              <option value="Not decided yet">Not decided yet</option>
+              <option value="Under $100">Under $100</option>
+              <option value="$100 – $300">$100 – $300</option>
+              <option value="$300 – $700">$300 – $700</option>
+              <option value="$700 – $1500">$700 – $1500</option>
+              <option value="$1500+">$1500+</option>
+              <option value="Discuss first">Discuss first</option>
+            </select>
+          </div>
+
+          <div class="inquiry-field">
+            <label for="projectTimeline">Preferred timeline *</label>
+            <select id="projectTimeline" name="timeline" required>
+              <option value="">Select a timeline</option>
+              <option value="As soon as possible">As soon as possible</option>
+              <option value="Within 2 weeks">Within 2 weeks</option>
+              <option value="Within 1 month">Within 1 month</option>
+              <option value="Within 2–3 months">Within 2–3 months</option>
+              <option value="Flexible">Flexible</option>
+            </select>
+          </div>
+        </div>
+      `;
+
+      messageInput.parentNode.insertBefore(
+        inquiryFields,
+        messageInput
+      );
+
+      /* Update submit button */
+
+      const originalButtonText = submitButton
+        ? (
+            submitButton.tagName === "INPUT"
+              ? submitButton.value
+              : submitButton.textContent
+          )
+        : "";
 
       if (submitButton) {
-        submitButton.disabled = true;
-
         if (submitButton.tagName === "INPUT") {
-          submitButton.value = "Sending...";
+          submitButton.value = "Send Project Inquiry";
         } else {
-          submitButton.textContent = "Sending...";
+          submitButton.innerHTML =
+            'Send Project Inquiry <span>↗</span>';
         }
       }
 
-      formStatus.textContent = "Submitting your inquiry...";
+      /* Submit to Vercel API */
 
-      try {
-        const response = await fetch("/api/inquiries", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            subject,
-            message
-          })
-        });
+      contactForm.addEventListener("submit", async event => {
+        event.preventDefault();
 
-        const result = await response.json().catch(() => ({}));
+        formStatus.textContent = "";
 
-        if (!response.ok || !result.success) {
-          throw new Error(
-            result.message || "Unable to submit your inquiry."
-          );
+        if (!contactForm.reportValidity()) return;
+
+        const payload = {
+          name: nameInput.value.trim(),
+          email: emailInput.value.trim(),
+          subject: subjectInput.value.trim(),
+          service: document.getElementById("projectService").value,
+          project_type: document.getElementById("projectType").value,
+          budget: document.getElementById("projectBudget").value,
+          timeline: document.getElementById("projectTimeline").value,
+          message: messageInput.value.trim()
+        };
+
+        if (
+          payload.name.length < 2 ||
+          payload.email.length === 0 ||
+          payload.message.length < 5
+        ) {
+          formStatus.textContent =
+            "Please check your name, email and project description.";
+          return;
         }
 
-        formStatus.textContent =
-          "Your inquiry has been submitted successfully. Thank you!";
-
-        contactForm.reset();
-
-      } catch (error) {
-        console.error("Contact form submission error:", error);
-
-        formStatus.textContent =
-          error.message ||
-          "Something went wrong. Please try again.";
-      } finally {
         if (submitButton) {
-          submitButton.disabled = false;
+          submitButton.disabled = true;
+          submitButton.classList.add("loading");
 
           if (submitButton.tagName === "INPUT") {
-            submitButton.value = originalButtonText;
+            submitButton.value = "Sending...";
           } else {
-            submitButton.textContent = originalButtonText;
+            submitButton.textContent = "Sending...";
           }
         }
-      }
-    });
+
+        formStatus.textContent = "Submitting your project inquiry...";
+
+        try {
+          const response = await fetch("/api/inquiries", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok || !result.success) {
+            throw new Error(
+              result.message ||
+              "Unable to submit your inquiry. Please try again."
+            );
+          }
+
+          formStatus.textContent =
+            "Your project inquiry has been submitted successfully. Thank you!";
+
+          contactForm.reset();
+
+        } catch (error) {
+          console.error("Project inquiry error:", error);
+
+          formStatus.textContent =
+            error.message ||
+            "Something went wrong. Please try again.";
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.classList.remove("loading");
+
+            if (submitButton.tagName === "INPUT") {
+              submitButton.value = originalButtonText;
+            } else {
+              submitButton.innerHTML = originalButtonText;
+            }
+          }
+        }
+      });
+    }
   }
 
-  /* =================================
-     11. CURRENT YEAR
-  ================================= */
+  /* 11. CURRENT YEAR */
 
   const currentYear = document.getElementById("currentYear");
 
@@ -481,9 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentYear.textContent = new Date().getFullYear();
   }
 
-  /* =================================
-     12. INITIALIZATION
-  ================================= */
+  /* 12. INITIALIZATION */
 
   console.log(
     "%cVANTA STUDIO",
@@ -493,5 +576,4 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log(
     "Digital experiences. Built with intention."
   );
-
 });
