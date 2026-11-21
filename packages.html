@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080810">
+  <meta name="description" content="Explore VANTA Studio services and project packages.">
+  <title>Services & Packages — VANTA Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="packages.css">
+  <script src="packages.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="logo">VANTA<span>.</span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#services" class="active">Services</a>
+        <a href="index.html#work">Work</a>
+      </div>
+      <a class="nav-cta" href="index.html#contact">Start a Project ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="eyebrow"><span></span> SERVICES & PACKAGES</div>
+        <h1>Choose your next<br><span>digital advantage.</span></h1>
+        <p>Explore our service areas and package structures. Every project can be adjusted to match your goals, scope and requirements.</p>
+        <a href="#services" class="primary-button">Explore Packages <span>↓</span></a>
+        <div class="hero-meta">
+          <span>01 — SERVICES</span>
+          <span>02 — PACKAGE TIERS</span>
+          <span>03 — PROJECT INQUIRY</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro-strip">
+      <div class="container intro-grid">
+        <div><span class="intro-number">06</span><span>CORE SERVICE AREAS</span></div>
+        <div><span class="intro-number">03</span><span>PACKAGE LEVELS</span></div>
+        <div><span class="intro-number">01</span><span>TAILORED APPROACH</span></div>
+      </div>
+    </section>
+
+    <section class="services-section" id="services">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">WHAT WE CAN BUILD</div>
+            <h2>Services designed<br>around <span>your goals.</span></h2>
+          </div>
+          <p>Choose a service to explore its package tiers. Final scope, timeline and quotation are confirmed after project discussion.</p>
+        </div>
+
+        <div class="service-tabs" role="tablist" aria-label="Choose a service">
+          <button class="service-tab active" data-service="web" role="tab" aria-selected="true">01 · Web Development</button>
+          <button class="service-tab" data-service="uiux" role="tab" aria-selected="false">02 · UI / UX Design</button>
+          <button class="service-tab" data-service="brand" role="tab" aria-selected="false">03 · Brand Identity</button>
+          <button class="service-tab" data-service="strategy" role="tab" aria-selected="false">04 · Digital Strategy</button>
+          <button class="service-tab" data-service="commerce" role="tab" aria-selected="false">05 · E-Commerce</button>
+          <button class="service-tab" data-service="creative" role="tab" aria-selected="false">06 · Creative Solutions</button>
+        </div>
+
+        <div class="service-intro" aria-live="polite">
+          <div>
+            <span class="service-kicker" id="serviceKicker">SERVICE 01 / DEVELOPMENT</span>
+            <h3 id="serviceTitle">Web Development</h3>
+            <p id="serviceDescription">Responsive, accessible and performance-conscious websites built around your business goals.</p>
+          </div>
+          <span class="service-symbol" id="serviceSymbol">⌘</span>
+        </div>
+
+        <div class="package-grid" id="packageGrid">
+          <!-- Package cards are rendered by packages.js -->
+        </div>
+
+        <p class="package-note">Package descriptions are planning guides. Exact deliverables depend on the approved project scope.</p>
+      </div>
+    </section>
+
+    <section class="how-section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">HOW IT WORKS</div>
+            <h2>Clear steps.<br><span>Better outcomes.</span></h2>
+          </div>
+          <p>We keep the process understandable from the first conversation to final delivery.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card"><span>01</span><h3>Tell us your idea</h3><p>Share your goals, requirements and preferred service.</p></article>
+          <article class="step-card"><span>02</span><h3>Define the scope</h3><p>We discuss deliverables, timeline and project expectations.</p></article>
+          <article class="step-card"><span>03</span><h3>Review the quote</h3><p>You receive a project-specific proposal before work begins.</p></article>
+          <article class="step-card"><span>04</span><h3>Start the project</h3><p>Once the scope is approved, the project can move forward.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="container faq-layout">
+        <div>
+          <div class="eyebrow">GOOD TO KNOW</div>
+          <h2>Before we<br><span>get started.</span></h2>
+          <p>Some common questions about packages and project planning.</p>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>Are the package prices fixed?</summary>
+            <p>No. Pricing is currently provided through a custom quotation. Final cost depends on scope, complexity, content and integrations.</p>
+          </details>
+          <details>
+            <summary>Can I request a custom package?</summary>
+            <p>Yes. You can describe your requirements and request a combination of deliverables suited to your project.</p>
+          </details>
+          <details>
+            <summary>Does a package include hosting or a domain?</summary>
+            <p>Not by default. Hosting, domain registration, paid services and third-party subscriptions should be discussed and quoted separately.</p>
+          </details>
+          <details>
+            <summary>When does work begin?</summary>
+            <p>Work should begin only after the scope, deliverables, timeline, responsibilities and payment terms have been agreed.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container cta-inner">
+        <div class="eyebrow">HAVE A PROJECT IN MIND?</div>
+        <h2>Let's make it<br><span>real.</span></h2>
+        <p>Tell us what you want to build. We'll help define the right scope for it.</p>
+        <a href="index.html#contact" class="primary-button">Discuss Your Project ↗</a>
+        <a href="index.html" class="back-link">← Back to VANTA Studio</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a href="index.html" class="logo">VANTA<span>.</span></a>
+      <span>INDEPENDENT DIGITAL STUDIO</span>
+      <span>© <span id="year"></span> VANTA Studio</span>
+    </div>
+  </footer>
+</body>
+</html>
