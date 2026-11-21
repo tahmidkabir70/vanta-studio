@@ -3,20 +3,24 @@
 
 /* =================================
    VANTA STUDIO — INTERACTIONS
+   Updated: Supabase Inquiry API
 ================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
-  /* 1. SCROLL REVEAL */
+  /* =================================
+     1. SCROLL REVEAL ANIMATIONS
+  ================================= */
 
   const revealElements = document.querySelectorAll(".reveal");
 
   if (reduceMotion) {
     revealElements.forEach(el => el.classList.add("visible"));
-  } else {
+  } else if ("IntersectionObserver" in window) {
     const revealObserver = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach(entry => {
@@ -33,16 +37,20 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     revealElements.forEach(el => revealObserver.observe(el));
+  } else {
+    revealElements.forEach(el => el.classList.add("visible"));
   }
 
-  /* 2. MOBILE NAVIGATION */
+  /* =================================
+     2. MOBILE NAVIGATION
+  ================================= */
 
   const menuToggle = document.getElementById("menuToggle");
   const navMenu = document.getElementById("navMenu");
   const navLinks = document.querySelectorAll(".nav-link");
 
   function closeMenu() {
-    if (!menuToggle || !navMenu) return;
+    if (!navMenu || !menuToggle) return;
 
     navMenu.classList.remove("open");
     menuToggle.classList.remove("active");
@@ -72,7 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* 3. HEADER AND SCROLL PROGRESS */
+  /* =================================
+     3. HEADER SCROLL EFFECT
+  ================================= */
 
   const header = document.getElementById("header");
   const scrollProgress = document.getElementById("scrollProgress");
@@ -115,7 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* 4. ACTIVE NAVIGATION */
+  /* =================================
+     4. ACTIVE NAVIGATION
+  ================================= */
 
   const sections = document.querySelectorAll("main section[id]");
 
@@ -143,7 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* 5. CUSTOM CURSOR GLOW */
+  /* =================================
+     5. CUSTOM CURSOR GLOW
+  ================================= */
 
   const cursorGlow = document.getElementById("cursorGlow");
 
@@ -165,7 +179,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* 6. ANIMATED COUNTERS */
+  /* =================================
+     6. ANIMATED COUNTERS
+  ================================= */
 
   const counters = document.querySelectorAll("[data-count]");
 
@@ -219,7 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
     counters.forEach(animateCounter);
   }
 
-  /* 7. PROJECT FILTER */
+  /* =================================
+     7. PROJECT FILTER
+  ================================= */
 
   const filterButtons = document.querySelectorAll(".filter-btn");
   const projectCards = document.querySelectorAll(".project-card");
@@ -239,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         card.classList.toggle("filtered-out", !shouldShow);
 
-        if (shouldShow) {
+        if (shouldShow && !reduceMotion) {
           card.style.animation = "none";
           void card.offsetWidth;
           card.style.animation = "projectEnter .4s ease both";
@@ -248,7 +266,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* 8. PHILOSOPHY SLIDER */
+  /* =================================
+     8. TESTIMONIAL SLIDER
+  ================================= */
 
   const testimonials = [
     {
@@ -276,29 +296,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const slideNumber = document.getElementById("slideNumber");
   const testimonialContent = document.querySelector(".testimonial-content");
 
+  function updateTestimonialContent(item) {
+    if (testimonialText) testimonialText.textContent = item.text;
+    if (testimonialName) testimonialName.textContent = item.name;
+    if (testimonialRole) testimonialRole.textContent = item.role;
+  }
+
   function showTestimonial(index) {
     currentSlide =
       (index + testimonials.length) % testimonials.length;
 
     const item = testimonials[currentSlide];
 
-    function updateContent() {
-      if (testimonialText) testimonialText.textContent = item.text;
-      if (testimonialName) testimonialName.textContent = item.name;
-      if (testimonialRole) testimonialRole.textContent = item.role;
-
-      if (testimonialContent) {
-        testimonialContent.style.opacity = "1";
-        testimonialContent.style.transform = "translateY(0)";
-      }
-    }
-
-    if (!reduceMotion && testimonialContent) {
+    if (testimonialContent && !reduceMotion) {
       testimonialContent.style.opacity = "0";
       testimonialContent.style.transform = "translateY(8px)";
-      setTimeout(updateContent, 180);
+
+      window.setTimeout(() => {
+        updateTestimonialContent(item);
+        testimonialContent.style.opacity = "1";
+        testimonialContent.style.transform = "translateY(0)";
+      }, 180);
     } else {
-      updateContent();
+      updateTestimonialContent(item);
     }
 
     if (slideNumber) {
@@ -322,9 +342,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  showTestimonial(0);
+  if (testimonialText || testimonialName || testimonialRole) {
+    showTestimonial(0);
+  }
 
-  /* 9. FAQ ACCORDION */
+  /* =================================
+     9. FAQ ACCORDION
+  ================================= */
 
   const faqItems = document.querySelectorAll(".faq-item");
 
@@ -354,246 +378,112 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* 10. PROJECT INQUIRY SYSTEM */
+  /* =================================
+     10. CONTACT FORM — SUPABASE API
+  ================================= */
 
   const contactForm = document.getElementById("contactForm");
   const formStatus = document.getElementById("formStatus");
 
-  if (contactForm) {
-    const existingMessage =
-      document.getElementById("contactMessage");
+  if (contactForm && formStatus) {
+    const submitButton = contactForm.querySelector(
+      'button[type="submit"], input[type="submit"]'
+    );
 
-    /*
-      Add structured project fields to the existing
-      contact form without changing index.html.
-    */
+    const originalButtonText = submitButton
+      ? (submitButton.tagName === "INPUT"
+          ? submitButton.value
+          : submitButton.textContent)
+      : "";
 
-    const inquiryFields = document.createElement("div");
-    inquiryFields.className = "inquiry-fields";
-
-    inquiryFields.innerHTML = `
-      <div class="form-row inquiry-row">
-        <div class="inquiry-field">
-          <label for="projectService">Service required</label>
-          <select id="projectService" required>
-            <option value="">Choose a service</option>
-            <option value="Web Development">Web Development</option>
-            <option value="UI / UX Design">UI / UX Design</option>
-            <option value="Brand Identity">Brand Identity</option>
-            <option value="Digital Strategy">Digital Strategy</option>
-            <option value="E-Commerce">E-Commerce</option>
-            <option value="Creative Solutions">Creative Solutions</option>
-            <option value="Not sure yet">Not sure yet</option>
-          </select>
-        </div>
-
-        <div class="inquiry-field">
-          <label for="projectType">Project type</label>
-          <select id="projectType" required>
-            <option value="">Choose project type</option>
-            <option value="New project">New project</option>
-            <option value="Redesign">Website / product redesign</option>
-            <option value="Improvement">Existing project improvement</option>
-            <option value="Consultation">Consultation</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row inquiry-row">
-        <div class="inquiry-field">
-          <label for="projectBudget">Estimated budget</label>
-          <select id="projectBudget" required>
-            <option value="">Select a budget range</option>
-            <option value="Not decided yet">Not decided yet</option>
-            <option value="Under $100">Under $100</option>
-            <option value="$100 – $300">$100 – $300</option>
-            <option value="$300 – $700">$300 – $700</option>
-            <option value="$700 – $1500">$700 – $1500</option>
-            <option value="$1500+">$1500+</option>
-            <option value="Discuss first">Discuss first</option>
-          </select>
-        </div>
-
-        <div class="inquiry-field">
-          <label for="projectTimeline">Preferred timeline</label>
-          <select id="projectTimeline" required>
-            <option value="">Select a timeline</option>
-            <option value="As soon as possible">As soon as possible</option>
-            <option value="Within 2 weeks">Within 2 weeks</option>
-            <option value="Within 1 month">Within 1 month</option>
-            <option value="Within 2–3 months">Within 2–3 months</option>
-            <option value="Flexible">Flexible</option>
-          </select>
-        </div>
-      </div>
-    `;
-
-    if (existingMessage) {
-      existingMessage.parentNode.insertBefore(
-        inquiryFields,
-        existingMessage
-      );
-    }
-
-    const inquiryOutput = document.createElement("div");
-    inquiryOutput.className = "inquiry-output";
-    inquiryOutput.hidden = true;
-
-    inquiryOutput.innerHTML = `
-      <div class="inquiry-output-heading">
-        <strong>YOUR INQUIRY SUMMARY</strong>
-        <span>Review and copy your details</span>
-      </div>
-
-      <textarea
-        id="inquirySummary"
-        rows="12"
-        readonly
-        aria-label="Generated project inquiry summary"
-      ></textarea>
-
-      <button
-        type="button"
-        class="button button-outline"
-        id="copyInquiry"
-      >
-        Copy Inquiry Details
-      </button>
-
-      <p class="inquiry-disclaimer">
-        This prototype does not send or store your inquiry.
-        Copy the summary and share it through a verified contact channel.
-      </p>
-    `;
-
-    contactForm.appendChild(inquiryOutput);
-
-    const submitButton =
-      contactForm.querySelector('button[type="submit"]');
-
-    if (submitButton) {
-      submitButton.innerHTML =
-        'Generate Inquiry Summary <span>↗</span>';
-    }
-
-    contactForm.addEventListener("submit", event => {
+    contactForm.addEventListener("submit", async event => {
       event.preventDefault();
 
       if (!contactForm.reportValidity()) return;
 
-      const name =
-        document.getElementById("contactName")?.value.trim() || "";
+      const name = document.getElementById("contactName")?.value.trim();
+      const email = document.getElementById("contactEmail")?.value.trim();
+      const subject = document.getElementById("contactSubject")?.value.trim();
+      const message = document.getElementById("contactMessage")?.value.trim();
 
-      const email =
-        document.getElementById("contactEmail")?.value.trim() || "";
-
-      const subject =
-        document.getElementById("contactSubject")?.value.trim() || "";
-
-      const message =
-        document.getElementById("contactMessage")?.value.trim() || "";
-
-      const service =
-        document.getElementById("projectService")?.value || "";
-
-      const projectType =
-        document.getElementById("projectType")?.value || "";
-
-      const budget =
-        document.getElementById("projectBudget")?.value || "";
-
-      const timeline =
-        document.getElementById("projectTimeline")?.value || "";
-
-      if (
-        !name ||
-        !email ||
-        !message ||
-        !service ||
-        !projectType ||
-        !budget ||
-        !timeline
-      ) {
-        if (formStatus) {
-          formStatus.textContent =
-            "Please complete all required fields.";
-        }
+      if (!name || !email || !message) {
+        formStatus.textContent =
+          "Please complete all required fields.";
         return;
       }
 
-      const summary = [
-        "VANTA STUDIO — PROJECT INQUIRY",
-        "================================",
-        "",
-        `Name: ${name}`,
-        `Email: ${email}`,
-        `Subject: ${subject || "Not specified"}`,
-        "",
-        `Service: ${service}`,
-        `Project Type: ${projectType}`,
-        `Estimated Budget: ${budget}`,
-        `Preferred Timeline: ${timeline}`,
-        "",
-        "PROJECT DESCRIPTION",
-        "-------------------",
-        message,
-        "",
-        "Generated from the VANTA Studio website."
-      ].join("\n");
+      if (submitButton) {
+        submitButton.disabled = true;
 
-      const summaryField =
-        document.getElementById("inquirySummary");
-
-      summaryField.value = summary;
-      inquiryOutput.hidden = false;
-
-      if (formStatus) {
-        formStatus.textContent =
-          "Inquiry summary generated. Review and copy your details below.";
+        if (submitButton.tagName === "INPUT") {
+          submitButton.value = "Sending...";
+        } else {
+          submitButton.textContent = "Sending...";
+        }
       }
 
-      inquiryOutput.scrollIntoView({
-        behavior: reduceMotion ? "instant" : "smooth",
-        block: "nearest"
-      });
-    });
+      formStatus.textContent = "Submitting your inquiry...";
 
-    const copyButton =
-      document.getElementById("copyInquiry");
+      try {
+        const response = await fetch("/api/inquiries", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            subject,
+            message
+          })
+        });
 
-    if (copyButton) {
-      copyButton.addEventListener("click", async () => {
-        const summaryField =
-          document.getElementById("inquirySummary");
+        const result = await response.json().catch(() => ({}));
 
-        try {
-          await navigator.clipboard.writeText(summaryField.value);
+        if (!response.ok || !result.success) {
+          throw new Error(
+            result.message || "Unable to submit your inquiry."
+          );
+        }
 
-          if (formStatus) {
-            formStatus.textContent =
-              "Inquiry details copied successfully.";
-          }
-        } catch (error) {
-          summaryField.focus();
-          summaryField.select();
+        formStatus.textContent =
+          "Your inquiry has been submitted successfully. Thank you!";
 
-          if (formStatus) {
-            formStatus.textContent =
-              "Automatic copy unavailable. Select and copy the summary manually.";
+        contactForm.reset();
+
+      } catch (error) {
+        console.error("Contact form submission error:", error);
+
+        formStatus.textContent =
+          error.message ||
+          "Something went wrong. Please try again.";
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+
+          if (submitButton.tagName === "INPUT") {
+            submitButton.value = originalButtonText;
+          } else {
+            submitButton.textContent = originalButtonText;
           }
         }
-      });
-    }
+      }
+    });
   }
 
-  /* 11. CURRENT YEAR */
+  /* =================================
+     11. CURRENT YEAR
+  ================================= */
 
   const currentYear = document.getElementById("currentYear");
 
   if (currentYear) {
     currentYear.textContent = new Date().getFullYear();
   }
+
+  /* =================================
+     12. INITIALIZATION
+  ================================= */
 
   console.log(
     "%cVANTA STUDIO",
@@ -603,4 +493,5 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log(
     "Digital experiences. Built with intention."
   );
+
 });
